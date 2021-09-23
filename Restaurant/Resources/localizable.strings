@@ -1,0 +1,11 @@
+/* 
+  localizable.strings
+  Shorten
+
+  Created by Raul Mantilla on 12/09/21.
+  
+*/
+
+// LetsGetStartedView Screen
+"lets_get_started_title" = "Let’s get started!";
+"lets_get_started_subtitle" = "Paste your first link into the field to shorten it";

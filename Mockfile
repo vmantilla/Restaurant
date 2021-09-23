@@ -1,0 +1,13 @@
+sourceryCommand: null
+sourceryTemplate: null
+RestaurantTests:
+  sources:
+    include:
+    - ./Restaurant
+  output: ./RestaurantTests/Mock.generated.swift
+  targets:
+  - RestaurantTests
+  testable:
+  - Restaurant
+  import:
+  - Foundation

@@ -6,27 +6,63 @@
 //
 
 import XCTest
+import SwiftyMocky
+@testable import Restaurant
 
 class RestaurantUseCaseImplTest: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    
+    private let restaurantRepository = RestaurantRepositoryMock()
+    private var restaurantUseCaseImpl: RestaurantUseCaseImpl!
+    
+    override func setUp() {
+        super.setUp()
+        restaurantUseCaseImpl = RestaurantUseCaseImpl(restaurantRepository: restaurantRepository)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func testGetRestaurantListSuccess() {
+        let calledCompletionBlock = expectation(description: "Should call completion block")
+        
+        Perform(restaurantRepository, .getRestaurantList(completionHandler: .any, perform: { completion in
+            completion(.success([]))
+        }) )
+        
+        restaurantUseCaseImpl.getRestaurantList { result in
+            calledCompletionBlock.fulfill()
+            switch result {
+            case .success(let list) :
+                XCTAssertEqual(list, [])
+            case .failure(_):
+                XCTFail("testGetRestaurantListSuccess should return success")
+            }
+        }
+        
+        waitForExpectations(timeout: 0.5) { (error) in
+            guard let error = error else { return }
+            XCTFail("Error: \(error)")
         }
     }
-
+    
+    func testGetRestaurantListFails() {
+        let calledCompletionBlock = expectation(description: "Should call completion block")
+        
+        Perform(restaurantRepository, .getRestaurantList(completionHandler: .any, perform: { completion in
+            completion(.failure(DataSourceError.parseError))
+        }) )
+        
+        restaurantUseCaseImpl.getRestaurantList { result in
+            calledCompletionBlock.fulfill()
+            switch result {
+            case .success(_) :
+                XCTFail("testGetRestaurantListFails should return failure")
+            case .failure(let error):
+                XCTAssertEqual(error as! DataSourceError, DataSourceError.parseError)
+            }
+        }
+        
+        waitForExpectations(timeout: 0.5) { (error) in
+            guard let error = error else { return }
+            XCTFail("Error: \(error)")
+        }
+    }
+    
 }
